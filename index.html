@@ -33,6 +33,40 @@
   </style>
 </head>
 <body>
-  <iframe src="https://script.google.com/macros/s/AKfycbzAoiCpS5L7IO-S1H74Qat78ka0cWf75F2r24AfWpEyDMULP4Uap1CPls8ze8GF_LJZww/exec"></iframe>
+  <iframe id="appFrame" src="https://script.google.com/macros/s/AKfycbzAoiCpS5L7IO-S1H74Qat78ka0cWf75F2r24AfWpEyDMULP4Uap1CPls8ze8GF_LJZww/exec"></iframe>
+
+  <script>
+    // Dauerhafte Speicherung auf iPhone & Android
+    window.addEventListener('message', function(e) {
+      if (!e.data || !e.data.action) return;
+      if (e.data.action === 'save_auth') {
+        if (e.data.remember === '1') {
+          localStorage.setItem('angerer_emp', e.data.empId);
+          localStorage.setItem('angerer_pin', e.data.pin);
+          localStorage.setItem('angerer_rem', '1');
+        } else {
+          localStorage.removeItem('angerer_emp');
+          localStorage.removeItem('angerer_pin');
+          localStorage.setItem('angerer_rem', '0');
+        }
+      } else if (e.data.action === 'clear_auth') {
+        localStorage.removeItem('angerer_emp');
+        localStorage.removeItem('angerer_pin');
+        localStorage.setItem('angerer_rem', '0');
+      } else if (e.data.action === 'get_auth') {
+        var emp = localStorage.getItem('angerer_emp') || '';
+        var pin = localStorage.getItem('angerer_pin') || '';
+        var rem = localStorage.getItem('angerer_rem') || '';
+        if (e.source) {
+          e.source.postMessage({
+            action: 'auth_data',
+            empId: emp,
+            pin: pin,
+            remember: rem
+          }, '*');
+        }
+      }
+    });
+  </script>
 </body>
 </html>
